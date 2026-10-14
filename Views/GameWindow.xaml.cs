@@ -141,7 +141,7 @@ namespace HanoiTowers.Views
 
         private double PegCenterX(int peg) { return board.ActualWidth * (2 * peg + 1) / 6.0; }
 
-        private double BaseTopY { get { return board.ActualHeight - 42; } }
+        private double BaseTopY { get { return board.ActualHeight - 90; } }
 
         private double RingWidth(int disk)
         {
@@ -161,7 +161,7 @@ namespace HanoiTowers.Views
             int n = Math.Max(_model.DiskCount, 1);
 
             // высота кольца подбирается так, чтобы башня помещалась при любом n
-            double availH = board.ActualHeight - 140;
+            double availH = board.ActualHeight - 210;
             if (availH < n * 8) availH = n * 8;
             _ringHeight = Math.Min(34, availH / n);
             if (_ringHeight < 8) _ringHeight = 8;
@@ -185,7 +185,7 @@ namespace HanoiTowers.Views
                 _pegLabels[i].Width = 40;
                 _pegLabels[i].TextAlignment = TextAlignment.Center;
                 Canvas.SetLeft(_pegLabels[i], PegCenterX(i) - 20);
-                Canvas.SetTop(_pegLabels[i], baseY + 18);
+                Canvas.SetTop(_pegLabels[i], baseY + 14);
             }
 
             foreach (var kv in _rings) kv.Value.Height = _ringHeight;
@@ -320,7 +320,18 @@ namespace HanoiTowers.Views
             StopSolving();
             Hide();
             var menu = Application.Current.MainWindow as MainWindow;
-            if (menu != null) menu.Show();
+            if (menu != null)
+            {
+                menu.WindowState = this.WindowState;   // fullscreen игры → fullscreen меню
+                if (WindowState == WindowState.Normal)
+                {
+                    menu.Width = this.ActualWidth;
+                    menu.Height = this.ActualHeight;
+                    menu.Left = this.Left + (this.ActualWidth - menu.Width) / 2;
+                    menu.Top = this.Top + (this.ActualHeight - menu.Height) / 2;
+                }
+                menu.Show();
+            }
         }
 
         protected override void OnClosing(CancelEventArgs e)
@@ -467,7 +478,7 @@ namespace HanoiTowers.Views
         private void Window_StateChanged(object sender, EventArgs e)
         {
             bool max = WindowState == WindowState.Maximized;
-            RootGrid.Margin = max ? new Thickness(7) : new Thickness(0);
+            RootGrid.Margin = max ? new Thickness(8) : new Thickness(0);
             WindowBorder.CornerRadius = max ? new CornerRadius(0) : new CornerRadius(16);
             HeaderBorder.CornerRadius = max ? new CornerRadius(0) : new CornerRadius(16, 16, 0, 0);
             btnMaximize.Content = max ? "\uE923" : "\uE922";

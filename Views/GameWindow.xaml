@@ -55,7 +55,7 @@
                                 <TextBlock x:Name="tbMin" Style="{StaticResource StatLabel}" Text="минимум: 7"/>
                             </StackPanel>
 
-                            <WrapPanel VerticalAlignment="Center">
+                            <WrapPanel VerticalAlignment="Center" ItemHeight="44">
                                 <Button x:Name="btnUndo" Content="Отменить ход" Style="{StaticResource BtnGhost}"
                                         MinWidth="118" Margin="0,0,8,0" Click="BtnUndo_Click"/>
 

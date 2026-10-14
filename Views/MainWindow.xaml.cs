@@ -26,7 +26,24 @@ namespace HanoiTowers.Views
         private void BtnNewGame_Click(object sender, RoutedEventArgs e)
         {
             if (_game != null) { _game.CloseWithoutMenu(); _game = null; }
-            _game = new GameWindow((int)sliderDisks.Value);
+
+            _game = new GameWindow((int)sliderDisks.Value)
+            {
+                // переносим геометрию меню на окно игры
+                WindowState = this.WindowState,
+                WindowStartupLocation = WindowState == WindowState.Normal
+                    ? WindowStartupLocation.Manual : WindowStartupLocation.CenterScreen
+            };
+
+            if (WindowState == WindowState.Normal)
+            {
+                _game.Width = this.ActualWidth;    // +- те же размеры
+                _game.Height = this.ActualHeight;
+                _game.Left = this.Left + (this.ActualWidth - _game.Width) / 2;
+                _game.Top = this.Top + (this.ActualHeight - _game.Height) / 2;
+                // MinWidth/MinHeight из XAML не дадут окну стать меньше минимума — это нормально
+            }
+
             _game.Show();
             Hide();
             btnContinue.IsEnabled = true;
@@ -65,7 +82,7 @@ namespace HanoiTowers.Views
         private void Window_StateChanged(object sender, EventArgs e)
         {
             bool max = WindowState == WindowState.Maximized;
-            RootGrid.Margin = max ? new Thickness(7) : new Thickness(0);
+            RootGrid.Margin = max ? new Thickness(8) : new Thickness(0);
             WindowBorder.CornerRadius = max ? new CornerRadius(0) : new CornerRadius(16);
             HeaderBorder.CornerRadius = max ? new CornerRadius(0) : new CornerRadius(16, 16, 0, 0);
             btnMaximize.Content = max ? "\uE923" : "\uE922";
