@@ -1,0 +1,1 @@
+start bin\Release\net10.0-windows\HanoiTowers.exe

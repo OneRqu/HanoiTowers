@@ -128,10 +128,17 @@
                                         <Thumb.Template>
                                             <ControlTemplate TargetType="{x:Type Thumb}">
                                                 <Grid Background="Transparent">
-                                                    <Ellipse Fill="{StaticResource AccentBrush}"
+                                                    <Ellipse x:Name="thumbCircle"
+                                                             Fill="{StaticResource AccentBrush}"
                                                              Stroke="{StaticResource BgPanelBrush}"
                                                              StrokeThickness="3"/>
                                                 </Grid>
+                                                <ControlTemplate.Triggers>
+                                                    <Trigger Property="IsEnabled" Value="False">
+                                                        <Setter TargetName="thumbCircle" Property="Fill"
+                                                                Value="{StaticResource BorderSubtleBrush}"/>
+                                                    </Trigger>
+                                                </ControlTemplate.Triggers>
                                             </ControlTemplate>
                                         </Thumb.Template>
                                     </Thumb>
