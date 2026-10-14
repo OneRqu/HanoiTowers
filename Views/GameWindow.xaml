@@ -1,4 +1,4 @@
-﻿<Window x:Class="HanoiTowers.GameWindow"
+﻿<Window x:Class="HanoiTowers.Views.GameWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="Ханойские башни" Height="700" Width="1060"

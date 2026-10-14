@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace HanoiTowers
+namespace HanoiTowers.Models
 {
     public struct Move
     {

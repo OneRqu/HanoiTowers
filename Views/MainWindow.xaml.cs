@@ -1,6 +1,7 @@
 ﻿using System.Windows;
+using HanoiTowers.Models;
 
-namespace HanoiTowers
+namespace HanoiTowers.Views
 {
     public partial class MainWindow : Window
     {

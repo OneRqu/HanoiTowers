@@ -9,8 +9,9 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Shapes;
+using HanoiTowers.Models;
 
-namespace HanoiTowers
+namespace HanoiTowers.Views
 {
     public partial class GameWindow : Window
     {
