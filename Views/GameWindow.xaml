@@ -2,7 +2,8 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="Ханойские башни" Height="700" Width="1060"
-        WindowStartupLocation="CenterScreen" ResizeMode="CanMinimize"
+        MinWidth="760" MinHeight="520"
+        WindowStartupLocation="CenterScreen" ResizeMode="CanResize"
         Background="{StaticResource BgWindowBrush}">
     <Grid Margin="14">
         <Grid.RowDefinitions>
@@ -10,33 +11,38 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <!-- Верхняя панель -->
+        <!-- Верхняя панель: WrapPanel переносит кнопки при узком окне -->
         <Border Background="{StaticResource BgCardBrush}" CornerRadius="14" Padding="14,9">
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="Auto"/>
-                </Grid.ColumnDefinitions>
+            <DockPanel>
+                <StackPanel DockPanel.Dock="Right" HorizontalAlignment="Right"
+                            VerticalAlignment="Center" Margin="16,0,0,0">
+                    <TextBlock x:Name="tbMoves" Style="{StaticResource StatValue}" Text="Ходы: 0"/>
+                    <TextBlock x:Name="tbMin" Style="{StaticResource StatLabel}" Text="минимум: 7"/>
+                </StackPanel>
 
-                <StackPanel Orientation="Horizontal">
+                <WrapPanel VerticalAlignment="Center">
                     <Button x:Name="btnUndo" Content="Отменить ход" Style="{StaticResource BtnGhost}"
                             MinWidth="118" Margin="0,0,8,0" Click="BtnUndo_Click"/>
+
+                    <TextBlock Text="Скорость" VerticalAlignment="Center" Margin="4,0,6,0"
+                            FontSize="12.5" Foreground="{StaticResource TextSecondaryBrush}"/>
+                    <Slider x:Name="sliderSpeed" Minimum="0" Maximum="7" Value="4"
+                            Style="{StaticResource ModernSlider}" Width="90"
+                            VerticalAlignment="Center" ToolTip="Скорость автоматического решения"/>
+                                    <TextBlock x:Name="tbSpeedValue" Text="4" FontWeight="Bold" MinWidth="14"
+                            Foreground="{StaticResource AccentBrush}"
+                            VerticalAlignment="Center" Margin="6,0,0,0"/>
+
                     <Button x:Name="btnSolve" Content="Решить" Style="{StaticResource BtnAccent}"
-                            MinWidth="86" Margin="0,0,8,0" Click="BtnSolve_Click"/>
-                    <Button x:Name="btnStop" Content="Стоп" Style="{StaticResource BtnDanger}"
-                            MinWidth="72" Margin="0,0,8,0" Visibility="Collapsed" Click="BtnStop_Click"/>
+                            MinWidth="86" Margin="10,0,8,0" Click="BtnSolve_Click"/>
+                    <Button x:Name="btnStop" Content="Остановить" Style="{StaticResource BtnDanger}"
+                            MinWidth="110" Margin="0,0,8,0" Visibility="Collapsed" Click="BtnStop_Click"/>
                     <Button x:Name="btnRestart" Content="Заново" Style="{StaticResource BtnGhost}"
                             MinWidth="86" Margin="0,0,8,0" Click="BtnRestart_Click"/>
                     <Button x:Name="btnMenu" Content="В меню" Style="{StaticResource BtnGhost}"
                             MinWidth="86" Click="BtnMenu_Click"/>
-                </StackPanel>
-
-                <StackPanel Grid.Column="2" HorizontalAlignment="Right" VerticalAlignment="Center">
-                    <TextBlock x:Name="tbMoves" Style="{StaticResource StatValue}" Text="Ходы: 0"/>
-                    <TextBlock x:Name="tbMin" Style="{StaticResource StatLabel}" Text="минимум: 7"/>
-                </StackPanel>
-            </Grid>
+                </WrapPanel>
+            </DockPanel>
         </Border>
 
         <!-- Игровое поле -->

@@ -37,5 +37,10 @@ namespace HanoiTowers.Views
             _game.Show();
             Hide();
         }
+
+        private void BtnExit_Click(object sender, RoutedEventArgs e)
+        {
+            Application.Current.Shutdown();
+        }
     }
 }

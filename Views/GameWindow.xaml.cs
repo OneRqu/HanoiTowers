@@ -17,6 +17,9 @@ namespace HanoiTowers.Views
     {
         private readonly GameModel _model = new GameModel(3);
 
+        private const double SlowestMs = 900;   // уровень Minimum (0)
+        private const double FastestMs = 40;    // уровень Maximum (7)
+
         private Rectangle _baseShape;
         private Rectangle[] _pegShapes;
         private TextBlock[] _pegLabels;
@@ -49,6 +52,8 @@ namespace HanoiTowers.Views
         public GameWindow(int diskCount)
         {
             InitializeComponent();
+            sliderSpeed.ValueChanged += (s, e) => tbSpeedValue.Text = ((int)sliderSpeed.Value).ToString();
+            tbSpeedValue.Text = ((int)sliderSpeed.Value).ToString();
             _model.Restart(diskCount);
             BuildBoard();
             board.Loaded += (s, e) => LayoutAll();   // раскладка, когда размеры известны
@@ -136,13 +141,14 @@ namespace HanoiTowers.Views
 
         private double PegCenterX(int peg) { return board.ActualWidth * (2 * peg + 1) / 6.0; }
 
-        private double BaseTopY { get { return board.ActualHeight - 36; } }
+        private double BaseTopY { get { return board.ActualHeight - 42; } }
 
         private double RingWidth(int disk)
         {
-            double minW = 46;
-            double maxW = board.ActualWidth / 3.0 - 30;
-            if (maxW < minW) maxW = minW;          // ЗАЩИТА: ширина никогда не отрицательна
+            // самый широкий диск должен лежать НА платформе с отступом от её края
+            double maxW = board.ActualWidth / 3.0 - 56;
+            if (maxW < 60) maxW = 60;
+            double minW = Math.Min(46, maxW * 0.5);
             if (_model.DiskCount == 1) return Math.Min(maxW, 90);
             double t = (disk - 1) / (double)(_model.DiskCount - 1);
             return minW + t * (maxW - minW);
@@ -150,27 +156,36 @@ namespace HanoiTowers.Views
 
         private void UpdateSizes()
         {
-            // Ключевая защита от падения: пока канвас не измерен — ничего не считаем.
             if (_baseShape == null || board.ActualWidth < 20 || board.ActualHeight < 20) return;
 
-            _ringHeight = (board.ActualHeight - 150) / Math.Max(_model.DiskCount, 1);
-            if (_ringHeight > 34) _ringHeight = 34;
-            if (_ringHeight < 14) _ringHeight = 14;
+            int n = Math.Max(_model.DiskCount, 1);
+
+            // высота кольца подбирается так, чтобы башня помещалась при любом n
+            double availH = board.ActualHeight - 140;
+            if (availH < n * 8) availH = n * 8;
+            _ringHeight = Math.Min(34, availH / n);
+            if (_ringHeight < 8) _ringHeight = 8;
 
             double baseY = BaseTopY;
-            _baseShape.Width = Math.Max(60, board.ActualWidth - 40);
+            _baseShape.Width = Math.Max(60, board.ActualWidth - 32);
             _baseShape.Height = 12;
-            Canvas.SetLeft(_baseShape, 20);
+            Canvas.SetLeft(_baseShape, 16);
             Canvas.SetTop(_baseShape, baseY);
 
-            double pegHeight = Math.Max(40, _ringHeight * _model.DiskCount + 24);
+            // стержень утоплен в платформу на полтолщины — выглядит «посаженным»
+            double pegBottom = baseY + 6;
+            double pegHeight = _ringHeight * n + 30;
             for (int i = 0; i < 3; i++)
             {
                 _pegShapes[i].Height = pegHeight;
                 Canvas.SetLeft(_pegShapes[i], PegCenterX(i) - 6);
-                Canvas.SetTop(_pegShapes[i], baseY - pegHeight);
-                Canvas.SetLeft(_pegLabels[i], PegCenterX(i) - 7);
-                Canvas.SetTop(_pegLabels[i], baseY + 4);
+                Canvas.SetTop(_pegShapes[i], pegBottom - pegHeight);
+
+                // буквы: точное центрирование по стержню, ПОД платформой
+                _pegLabels[i].Width = 40;
+                _pegLabels[i].TextAlignment = TextAlignment.Center;
+                Canvas.SetLeft(_pegLabels[i], PegCenterX(i) - 20);
+                Canvas.SetTop(_pegLabels[i], baseY + 18);
             }
 
             foreach (var kv in _rings) kv.Value.Height = _ringHeight;
@@ -179,7 +194,7 @@ namespace HanoiTowers.Views
         private void LayoutAll()
         {
             if (_baseShape == null) return;
-            if (board.ActualWidth < 20 || board.ActualHeight < 20) return;  // ещё не показано
+            if (board.ActualWidth < 20 || board.ActualHeight < 20) return;
             UpdateSizes();
             for (int p = 0; p < 3; p++)
                 for (int level = 0; level < _model.Pegs[p].Count; level++)
@@ -205,6 +220,7 @@ namespace HanoiTowers.Views
             tbMin.Text = string.Format("минимум: {0}", GameModel.MinMoves(_model.DiskCount));
             btnUndo.IsEnabled = !_finished && !_solving && _model.History.Count > 0;
             btnSolve.IsEnabled = !_finished && !_solving;
+            sliderSpeed.IsEnabled = !_solving;   // скорость меняется только вне авторешения
         }
 
         private void CheckFinished()
@@ -263,7 +279,7 @@ namespace HanoiTowers.Views
             int to = HitPeg(e.GetPosition(board));
             bool moved = to >= 0 && _model.TryMove(_dragFromPeg, to);
 
-            LayoutAll();          // невалидный ход — кольцо вернётся на место
+            LayoutAll();
             UpdateStatus();
             if (moved) CheckFinished();
         }
@@ -307,7 +323,7 @@ namespace HanoiTowers.Views
 
         protected override void OnClosing(CancelEventArgs e)
         {
-            if (_returnToMenuOnClose)   // крестик = вернуться в меню, игру не теряем
+            if (_returnToMenuOnClose)   // крестик = вернуться в меню
             {
                 e.Cancel = true;
                 ReturnToMenu();
@@ -349,12 +365,18 @@ namespace HanoiTowers.Views
             if (_cts != null) _cts.Cancel();
         }
 
+        private double SpeedToMs()
+        {
+            double min = sliderSpeed.Minimum;
+            double max = sliderSpeed.Maximum;
+            double t = (sliderSpeed.Value - min) / (max - min);       // 0..1 при любых Min/Max
+            return SlowestMs * Math.Pow(FastestMs / SlowestMs, t);    // плавная шкала
+        }
+
         private async Task PlaySolutionAsync(List<Move> plan, CancellationToken ct)
         {
-            double perMove = 2400.0 / plan.Count;
-            if (perMove > 320) perMove = 320;
-            if (perMove < 30) perMove = 30;
-
+            double perMove = SpeedToMs();
+            
             foreach (Move m in plan)
             {
                 if (ct.IsCancellationRequested || _model.IsSolved) break;
