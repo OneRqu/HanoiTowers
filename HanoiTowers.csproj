@@ -7,6 +7,18 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <UseWPF>true</UseWPF>
     <BaseOutputPath>bin\</BaseOutputPath>
+	  <ApplicationIcon>app.ico</ApplicationIcon>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="vc\**" />
+    <EmbeddedResource Remove="vc\**" />
+    <None Remove="vc\**" />
+    <Page Remove="vc\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="app.ico" />
+  </ItemGroup>
 
 </Project>

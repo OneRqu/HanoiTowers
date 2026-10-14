@@ -445,5 +445,37 @@ namespace HanoiTowers.Views
             el.BeginAnimation(prop, anim);
             return tcs.Task;
         }
+
+        private void Header_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            if (e.ClickCount == 2) { ToggleMaximize(); return; }
+            Helpers.WindowDrag.Drag(this);
+        }
+
+        private void BtnMinimize_Click(object sender, RoutedEventArgs e)
+        {
+            WindowState = WindowState.Minimized;
+        }
+
+        private void BtnMaximize_Click(object sender, RoutedEventArgs e) { ToggleMaximize(); }
+
+        private void ToggleMaximize()
+        {
+            WindowState = WindowState == WindowState.Maximized ? WindowState.Normal : WindowState.Maximized;
+        }
+
+        private void Window_StateChanged(object sender, EventArgs e)
+        {
+            bool max = WindowState == WindowState.Maximized;
+            RootGrid.Margin = max ? new Thickness(7) : new Thickness(0);
+            WindowBorder.CornerRadius = max ? new CornerRadius(0) : new CornerRadius(16);
+            HeaderBorder.CornerRadius = max ? new CornerRadius(0) : new CornerRadius(16, 16, 0, 0);
+            btnMaximize.Content = max ? "\uE923" : "\uE922";
+        }
+
+        private void BtnClose_Click(object sender, RoutedEventArgs e)
+        {
+            Close();   // сработает OnClosing и вернёт в меню
+        }
     }
 }

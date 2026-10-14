@@ -4,61 +4,99 @@
         Title="Ханойские башни" Height="700" Width="1060"
         MinWidth="760" MinHeight="520"
         WindowStartupLocation="CenterScreen" ResizeMode="CanResize"
-        Background="{StaticResource BgWindowBrush}">
-    <Grid Margin="14">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
-        </Grid.RowDefinitions>
+        Background="Transparent" AllowsTransparency="True"
+        WindowStyle="None" StateChanged="Window_StateChanged"
+        Icon="/app.ico">
+    <WindowChrome.WindowChrome>
+        <WindowChrome CaptionHeight="0" ResizeBorderThickness="7"
+                      GlassFrameThickness="0" CornerRadius="0"
+                      UseAeroCaptionButtons="False"/>
+    </WindowChrome.WindowChrome>
 
-        <!-- Верхняя панель: WrapPanel переносит кнопки при узком окне -->
-        <Border Background="{StaticResource BgCardBrush}" CornerRadius="14" Padding="14,9">
-            <DockPanel>
-                <StackPanel DockPanel.Dock="Right" HorizontalAlignment="Right"
-                            VerticalAlignment="Center" Margin="16,0,0,0">
-                    <TextBlock x:Name="tbMoves" Style="{StaticResource StatValue}" Text="Ходы: 0"/>
-                    <TextBlock x:Name="tbMin" Style="{StaticResource StatLabel}" Text="минимум: 7"/>
-                </StackPanel>
+    <Grid x:Name="RootGrid">
+        <!-- Новый Border: даёт окну скруглённые углы и фон -->
+        <Border x:Name="WindowBorder" Background="{StaticResource BgWindowBrush}"
+                CornerRadius="16">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
 
-                <WrapPanel VerticalAlignment="Center">
-                    <Button x:Name="btnUndo" Content="Отменить ход" Style="{StaticResource BtnGhost}"
-                            MinWidth="118" Margin="0,0,8,0" Click="BtnUndo_Click"/>
+                <!-- Своя строка заголовка -->
+                <Border x:Name="HeaderBorder" Height="40"
+                        Background="{StaticResource BgWindowBrush}"
+                        CornerRadius="16,16,0,0"
+                        MouseLeftButtonDown="Header_MouseLeftButtonDown">
+                    <Grid>
+                        <TextBlock Text="Ханойские башни" Margin="14,0,0,0" VerticalAlignment="Center"
+                                   FontSize="12.5" Foreground="{StaticResource TextSecondaryBrush}"/>
+                        <StackPanel HorizontalAlignment="Right" Orientation="Horizontal">
+                            <Button Content="&#xE921;" Style="{StaticResource CaptionButton}" Click="BtnMinimize_Click"/>
+                            <Button x:Name="btnMaximize" Content="&#xE922;" Style="{StaticResource CaptionButton}" Click="BtnMaximize_Click"/>
+                            <Button Content="&#xE8BB;" Style="{StaticResource CaptionCloseButton}" Click="BtnClose_Click"/>
+                        </StackPanel>
+                    </Grid>
+                </Border>
 
-                    <TextBlock Text="Скорость" VerticalAlignment="Center" Margin="4,0,6,0"
-                            FontSize="12.5" Foreground="{StaticResource TextSecondaryBrush}"/>
-                    <Slider x:Name="sliderSpeed" Minimum="0" Maximum="7" Value="4"
-                            Style="{StaticResource ModernSlider}" Width="90"
-                            VerticalAlignment="Center" ToolTip="Скорость автоматического решения"/>
-                                    <TextBlock x:Name="tbSpeedValue" Text="4" FontWeight="Bold" MinWidth="14"
-                            Foreground="{StaticResource AccentBrush}"
-                            VerticalAlignment="Center" Margin="6,0,0,0"/>
+                <!-- Содержимое игры -->
+                <Grid Grid.Row="1" Margin="14">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
 
-                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="4,0,0,0">
-                        <RadioButton x:Name="rbRecursive" Content="Рекурсия" GroupName="algo"
-                                     IsChecked="True" Style="{StaticResource RadioChip}"
-                                     ToolTip="Классическое рекурсивное решение"/>
-                                            <RadioButton x:Name="rbStack" Content="Стек" GroupName="algo"
-                                     Style="{StaticResource RadioChip}" Margin="6,0,0,0"
-                                     ToolTip="Итеративное решение через явный стек задач"/>
-                    </StackPanel>
+                    <!-- Верхняя панель -->
+                    <Border Background="{StaticResource BgCardBrush}" CornerRadius="14" Padding="14,9">
+                        <DockPanel>
+                            <StackPanel DockPanel.Dock="Right" HorizontalAlignment="Right"
+                                        VerticalAlignment="Center" Margin="16,0,0,0">
+                                <TextBlock x:Name="tbMoves" Style="{StaticResource StatValue}" Text="Ходы: 0"/>
+                                <TextBlock x:Name="tbMin" Style="{StaticResource StatLabel}" Text="минимум: 7"/>
+                            </StackPanel>
 
-                    <Button x:Name="btnSolve" Content="Решить" Style="{StaticResource BtnAccent}"
-                            MinWidth="86" Margin="10,0,8,0" Click="BtnSolve_Click"/>
-                    <Button x:Name="btnStop" Content="Остановить" Style="{StaticResource BtnDanger}"
-                            MinWidth="110" Margin="0,0,8,0" Visibility="Collapsed" Click="BtnStop_Click"/>
-                    <Button x:Name="btnRestart" Content="Заново" Style="{StaticResource BtnGhost}"
-                            MinWidth="86" Margin="0,0,8,0" Click="BtnRestart_Click"/>
-                    <Button x:Name="btnMenu" Content="В меню" Style="{StaticResource BtnGhost}"
-                            MinWidth="86" Click="BtnMenu_Click"/>
-                </WrapPanel>
-            </DockPanel>
-        </Border>
+                            <WrapPanel VerticalAlignment="Center">
+                                <Button x:Name="btnUndo" Content="Отменить ход" Style="{StaticResource BtnGhost}"
+                                        MinWidth="118" Margin="0,0,8,0" Click="BtnUndo_Click"/>
 
-        <!-- Игровое поле -->
-        <Border Grid.Row="1" Background="{StaticResource BgPanelBrush}"
-                CornerRadius="14" Margin="0,12,0,0">
-            <Canvas x:Name="board" Background="Transparent" Margin="10"
-                    SizeChanged="Board_SizeChanged"/>
+                                <TextBlock Text="Скорость" VerticalAlignment="Center" Margin="4,0,6,0"
+                                           FontSize="12.5" Foreground="{StaticResource TextSecondaryBrush}"/>
+                                <Slider x:Name="sliderSpeed" Minimum="0" Maximum="7" Value="4"
+                                        Style="{StaticResource ModernSlider}" Width="90"
+                                        VerticalAlignment="Center" ToolTip="Скорость автоматического решения"/>
+                                <TextBlock x:Name="tbSpeedValue" Text="4" FontWeight="Bold" MinWidth="14"
+                                           Foreground="{StaticResource AccentBrush}"
+                                           VerticalAlignment="Center" Margin="6,0,0,0"/>
+
+                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="4,0,0,0">
+                                    <RadioButton x:Name="rbRecursive" Content="Рекурсия" GroupName="algo"
+                                                 IsChecked="True" Style="{StaticResource RadioChip}"
+                                                 ToolTip="Классическое рекурсивное решение"/>
+                                    <RadioButton x:Name="rbStack" Content="Стек" GroupName="algo"
+                                                 Style="{StaticResource RadioChip}" Margin="6,0,0,0"
+                                                 ToolTip="Итеративное решение через явный стек задач"/>
+                                </StackPanel>
+
+                                <Button x:Name="btnSolve" Content="Решить" Style="{StaticResource BtnAccent}"
+                                        MinWidth="86" Margin="10,0,8,0" Click="BtnSolve_Click"/>
+                                <Button x:Name="btnStop" Content="Остановить" Style="{StaticResource BtnDanger}"
+                                        MinWidth="110" Margin="0,0,8,0" Visibility="Collapsed" Click="BtnStop_Click"/>
+                                <Button x:Name="btnRestart" Content="Заново" Style="{StaticResource BtnGhost}"
+                                        MinWidth="86" Margin="0,0,8,0" Click="BtnRestart_Click"/>
+                                <Button x:Name="btnMenu" Content="В меню" Style="{StaticResource BtnGhost}"
+                                        MinWidth="86" Click="BtnMenu_Click"/>
+                            </WrapPanel>
+                        </DockPanel>
+                    </Border>
+
+                    <!-- Игровое поле -->
+                    <Border Grid.Row="1" Background="{StaticResource BgPanelBrush}"
+                            CornerRadius="14" Margin="0,12,0,0">
+                        <Canvas x:Name="board" Background="Transparent" Margin="10"
+                                SizeChanged="Board_SizeChanged"/>
+                    </Border>
+                </Grid>
+            </Grid>
         </Border>
     </Grid>
 </Window>

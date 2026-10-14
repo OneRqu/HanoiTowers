@@ -4,74 +4,114 @@
         Title="Ханойские башни" Width="620" Height="700"
         MinWidth="420" MinHeight="500"
         WindowStartupLocation="CenterScreen" ResizeMode="CanResize"
-        Background="{StaticResource BgWindowBrush}">
-    <Viewbox Stretch="Uniform">
-        <Border Background="{StaticResource BgCardBrush}" CornerRadius="20"
-                Width="540" Margin="26" Padding="30">
-            <StackPanel>
+        Background="Transparent" AllowsTransparency="True"
+        WindowStyle="None" StateChanged="Window_StateChanged"
+        Icon="/app.ico">
+    <WindowChrome.WindowChrome>
+        <WindowChrome CaptionHeight="0" ResizeBorderThickness="7"
+                      GlassFrameThickness="0" CornerRadius="0"
+                      UseAeroCaptionButtons="False"/>
+    </WindowChrome.WindowChrome>
 
-                <TextBlock Text="Ханойские башни" FontSize="30" FontWeight="Bold"
-                           Foreground="{StaticResource TextPrimaryBrush}"/>
+    <Grid x:Name="RootGrid">
+        <!-- Новый Border: даёт окну скруглённые углы и фон -->
+        <Border x:Name="WindowBorder" Background="{StaticResource BgWindowBrush}"
+                CornerRadius="16">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
 
-                <TextBlock Margin="0,10,0,0" TextWrapping="Wrap" FontSize="13.5"
-                           Foreground="{StaticResource TextSecondaryBrush}"
-                           Text="Перенесите все кольца со стержня A на стержень C. За раз можно переместить только верхнее кольцо, а большее кольцо нельзя класть на меньшее."/>
-
-                <Border Background="{StaticResource BgPanelBrush}" CornerRadius="12"
-                        Padding="16,14" Margin="0,20,0,0">
-                    <StackPanel>
-                        <Grid>
-                            <TextBlock Text="Количество колец" FontSize="14"
-                                       Foreground="{StaticResource TextPrimaryBrush}"/>
-                            <TextBlock x:Name="tbDiskCount" HorizontalAlignment="Right"
-                                       FontSize="16" FontWeight="Bold"
-                                       Foreground="{StaticResource AccentBrush}"/>
-                        </Grid>
-                        <Slider x:Name="sliderDisks" Minimum="1" Maximum="10" Value="3"
-                                Style="{StaticResource ModernSlider}" Margin="0,12,0,0"/>
-                        <Grid Margin="0,4,0,0">
-                            <TextBlock Text="1" FontSize="12"
-                                       Foreground="{StaticResource TextSecondaryBrush}"/>
-                            <TextBlock Text="10" FontSize="12" HorizontalAlignment="Right"
-                                       Foreground="{StaticResource TextSecondaryBrush}"/>
-                        </Grid>
-                    </StackPanel>
-                </Border>
-
-                <Border Background="{StaticResource BgPanelDarkBrush}" CornerRadius="12"
-                        Padding="18,12" Margin="0,14,0,0">
-                    <StackPanel Orientation="Horizontal">
-                        <TextBlock x:Name="tbMinMoves" FontSize="30" FontWeight="Bold"
-                                   Foreground="{StaticResource WarningBrush}"
-                                   VerticalAlignment="Center" MinWidth="46"/>
-                        <StackPanel VerticalAlignment="Center" Margin="10,0,0,0">
-                            <TextBlock Text="минимальное число ходов" FontSize="13"
-                                       Foreground="{StaticResource TextSecondaryBrush}"/>
-                            <TextBlock x:Name="tbMinFor" FontSize="13" Margin="0,2,0,0"
-                                       Foreground="{StaticResource TextSecondaryBrush}"/>
+                <!-- Своя строка заголовка (теперь Border со скруглением сверху) -->
+                <Border x:Name="HeaderBorder" Height="40"
+                        Background="{StaticResource BgWindowBrush}"
+                        CornerRadius="16,16,0,0"
+                        MouseLeftButtonDown="Header_MouseLeftButtonDown">
+                    <Grid>
+                        <TextBlock Text="Ханойские башни" Margin="14,0,0,0" VerticalAlignment="Center"
+                                   FontSize="12.5" Foreground="{StaticResource TextSecondaryBrush}"/>
+                        <StackPanel HorizontalAlignment="Right" Orientation="Horizontal">
+                            <Button Content="&#xE921;" Style="{StaticResource CaptionButton}" Click="BtnMinimize_Click"/>
+                            <Button x:Name="btnMaximize" Content="&#xE922;" Style="{StaticResource CaptionButton}" Click="BtnMaximize_Click"/>
+                            <Button Content="&#xE8BB;" Style="{StaticResource CaptionCloseButton}" Click="BtnClose_Click"/>
                         </StackPanel>
-                    </StackPanel>
+                    </Grid>
                 </Border>
 
-                <!-- Кнопки: звёздные колонки — всегда помещаются в карточку -->
-                <Grid Margin="0,22,0,0">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="0.75*"/>
-                    </Grid.ColumnDefinitions>
-                    <Button x:Name="btnNewGame" Content="Новая игра"
-                            Style="{StaticResource BtnAccent}" Height="44" FontSize="14.5"
-                            Margin="0,0,12,0" Click="BtnNewGame_Click"/>
-                    <Button x:Name="btnContinue" Grid.Column="1" Content="Продолжить игру"
-                            Style="{StaticResource BtnGhost}" Height="44" FontSize="14"
-                            Margin="0,0,12,0" IsEnabled="False" Click="BtnContinue_Click"/>
-                    <Button x:Name="btnExit" Grid.Column="2" Content="Выход"
-                            Style="{StaticResource BtnGhost}" Height="44" FontSize="14"
-                            Foreground="{StaticResource DangerBrush}" Click="BtnExit_Click"/>
-                </Grid>
+                <!-- Содержимое меню -->
+                <Viewbox Grid.Row="1" Stretch="Uniform">
+                    <Border Background="{StaticResource BgCardBrush}" CornerRadius="20"
+                            Width="540" Margin="26" Padding="30">
+                        <StackPanel>
 
-            </StackPanel>
+                            <TextBlock Text="Ханойские башни" FontSize="30" FontWeight="Bold"
+                                       Foreground="{StaticResource TextPrimaryBrush}"/>
+
+                            <TextBlock Margin="0,10,0,0" TextWrapping="Wrap" FontSize="13.5"
+                                       Foreground="{StaticResource TextSecondaryBrush}"
+                                       Text="Перенесите все кольца со стержня A на стержень C. За раз можно переместить только верхнее кольцо, а большее кольцо нельзя класть на меньшее."/>
+
+                            <!-- Выбор количества колец -->
+                            <Border Background="{StaticResource BgPanelBrush}" CornerRadius="12"
+                                    Padding="16,14" Margin="0,20,0,0">
+                                <StackPanel>
+                                    <Grid>
+                                        <TextBlock Text="Количество колец" FontSize="14"
+                                                   Foreground="{StaticResource TextPrimaryBrush}"/>
+                                        <TextBlock x:Name="tbDiskCount" HorizontalAlignment="Right"
+                                                   FontSize="16" FontWeight="Bold"
+                                                   Foreground="{StaticResource AccentBrush}"/>
+                                    </Grid>
+                                    <Slider x:Name="sliderDisks" Minimum="1" Maximum="10" Value="3"
+                                            Style="{StaticResource ModernSlider}" Margin="0,12,0,0"/>
+                                    <Grid Margin="0,4,0,0">
+                                        <TextBlock Text="1" FontSize="12"
+                                                   Foreground="{StaticResource TextSecondaryBrush}"/>
+                                        <TextBlock Text="10" FontSize="12" HorizontalAlignment="Right"
+                                                   Foreground="{StaticResource TextSecondaryBrush}"/>
+                                    </Grid>
+                                </StackPanel>
+                            </Border>
+
+                            <!-- Минимальное число ходов -->
+                            <Border Background="{StaticResource BgPanelDarkBrush}" CornerRadius="12"
+                                    Padding="18,12" Margin="0,14,0,0">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock x:Name="tbMinMoves" FontSize="30" FontWeight="Bold"
+                                               Foreground="{StaticResource WarningBrush}"
+                                               VerticalAlignment="Center" MinWidth="46"/>
+                                    <StackPanel VerticalAlignment="Center" Margin="10,0,0,0">
+                                        <TextBlock Text="минимальное число ходов" FontSize="13"
+                                                   Foreground="{StaticResource TextSecondaryBrush}"/>
+                                        <TextBlock x:Name="tbMinFor" FontSize="13" Margin="0,2,0,0"
+                                                   Foreground="{StaticResource TextSecondaryBrush}"/>
+                                    </StackPanel>
+                                </StackPanel>
+                            </Border>
+
+                            <!-- Кнопки -->
+                            <Grid Margin="0,22,0,0">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="0.75*"/>
+                                </Grid.ColumnDefinitions>
+                                <Button x:Name="btnNewGame" Content="Новая игра"
+                                        Style="{StaticResource BtnAccent}" Height="44" FontSize="14.5"
+                                        Margin="0,0,12,0" Click="BtnNewGame_Click"/>
+                                <Button x:Name="btnContinue" Grid.Column="1" Content="Продолжить игру"
+                                        Style="{StaticResource BtnGhost}" Height="44" FontSize="14"
+                                        Margin="0,0,12,0" IsEnabled="False" Click="BtnContinue_Click"/>
+                                <Button x:Name="btnExit" Grid.Column="2" Content="Выход"
+                                        Style="{StaticResource BtnGhost}" Height="44" FontSize="14"
+                                        Foreground="{StaticResource DangerBrush}" Click="BtnExit_Click"/>
+                            </Grid>
+
+                        </StackPanel>
+                    </Border>
+                </Viewbox>
+            </Grid>
         </Border>
-    </Viewbox>
+    </Grid>
 </Window>
