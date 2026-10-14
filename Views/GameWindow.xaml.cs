@@ -221,6 +221,8 @@ namespace HanoiTowers.Views
             btnUndo.IsEnabled = !_finished && !_solving && _model.History.Count > 0;
             btnSolve.IsEnabled = !_finished && !_solving;
             sliderSpeed.IsEnabled = !_solving;   // скорость меняется только вне авторешения
+            rbRecursive.IsEnabled = !_solving;
+            rbStack.IsEnabled = !_solving;
         }
 
         private void CheckFinished()
@@ -337,7 +339,9 @@ namespace HanoiTowers.Views
         {
             if (_solving || _finished) return;
 
-            List<Move> plan = _model.BuildSolution();
+            List<Move> plan = rbStack.IsChecked == true
+                ? _model.BuildSolutionWithStack()
+                : _model.BuildSolution();
             if (plan.Count == 0) { CheckFinished(); return; }
 
             _solving = true;

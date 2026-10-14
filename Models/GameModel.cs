@@ -83,6 +83,68 @@ namespace HanoiTowers.Models
             return moves;
         }
 
+        // ---------- Доп. задание: то же самое, но без рекурсии — через явный Стек ----------
+
+        // Задача для стека: либо «подзадача» (перенести башню), либо конкретный ход
+        private struct SolveTask
+        {
+            public int Disk, From, Target;
+            public bool IsMove;   // true — перенести кольцо Disk со стержня From на Target
+
+            public static SolveTask Sub(int disk, int target)
+            {
+                return new SolveTask { Disk = disk, Target = target, IsMove = false };
+            }
+            public static SolveTask Move(int disk, int from, int target)
+            {
+                return new SolveTask { Disk = disk, From = from, Target = target, IsMove = true };
+            }
+        }
+
+        public List<Move> BuildSolutionWithStack()
+        {
+            List<int>[] sim = new List<int>[3];
+            for (int i = 0; i < 3; i++) sim[i] = new List<int>(Pegs[i]);
+            List<Move> moves = new List<Move>();
+
+            // Явный стек задач — заменяет стек вызовов рекурсии
+            Stack<SolveTask> stack = new Stack<SolveTask>();
+            stack.Push(SolveTask.Sub(DiskCount, TargetPeg));
+
+            while (stack.Count > 0)
+            {
+                SolveTask t = stack.Pop();
+
+                if (t.IsMove)                       // конкретный ход: переносим кольцо
+                {
+                    sim[t.From].Remove(t.Disk);
+                    sim[t.Target].Add(t.Disk);
+                    moves.Add(new Move(t.From, t.Target));
+                    continue;
+                }
+
+                if (t.Disk == 0) continue;          // базовый случай (аналог «if (disk == 0) return»)
+
+                int from = -1;                      // где сейчас этот диск
+                for (int p = 0; p < 3; p++)
+                    if (sim[p].Contains(t.Disk)) { from = p; break; }
+
+                if (from == t.Target)               // уже на месте — разбираемся с меньшими
+                {
+                    stack.Push(SolveTask.Sub(t.Disk - 1, t.Target));
+                    continue;
+                }
+
+                int aux = 3 - from - t.Target;
+                // Стек — LIFO, поэтому кладём в ОБРАТНОМ порядке:
+                stack.Push(SolveTask.Sub(t.Disk - 1, t.Target));    // выполнится третьим
+                stack.Push(SolveTask.Move(t.Disk, from, t.Target)); // вторым
+                stack.Push(SolveTask.Sub(t.Disk - 1, aux));         // первым
+            }
+
+            return moves;
+        }
+
         private static void Solve(List<int>[] pegs, int disk, int target, List<Move> moves)
         {
             if (disk == 0) return;

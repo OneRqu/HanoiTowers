@@ -67,6 +67,37 @@
             <Setter Property="Background" Value="Transparent"/>
         </Style>
 
+        <Style x:Key="RadioChip" TargetType="{x:Type RadioButton}">
+            <Setter Property="Foreground" Value="{StaticResource TextSecondaryBrush}"/>
+            <Setter Property="FontSize" Value="12.5"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type RadioButton}">
+                        <Border x:Name="root" Background="Transparent"
+                        BorderBrush="{StaticResource BorderSubtleBrush}"
+                        BorderThickness="2" CornerRadius="8" Padding="10,5">
+                            <ContentPresenter VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsChecked" Value="True">
+                                <Setter TargetName="root" Property="Background" Value="{StaticResource BgControlBrush}"/>
+                                <Setter TargetName="root" Property="BorderBrush" Value="{StaticResource AccentBrush}"/>
+                                <Setter Property="Foreground" Value="{StaticResource TextPrimaryBrush}"/>
+                            </Trigger>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="root" Property="Opacity" Value="0.85"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter TargetName="root" Property="Opacity" Value="0.4"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
         <Style x:Key="BtnDanger" TargetType="{x:Type Button}" BasedOn="{StaticResource BtnBase}">
             <Setter Property="Background" Value="{StaticResource DangerBrush}"/>
             <Setter Property="BorderBrush" Value="Transparent"/>

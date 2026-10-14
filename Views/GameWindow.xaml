@@ -33,6 +33,15 @@
                             Foreground="{StaticResource AccentBrush}"
                             VerticalAlignment="Center" Margin="6,0,0,0"/>
 
+                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="4,0,0,0">
+                        <RadioButton x:Name="rbRecursive" Content="Рекурсия" GroupName="algo"
+                                     IsChecked="True" Style="{StaticResource RadioChip}"
+                                     ToolTip="Классическое рекурсивное решение"/>
+                                            <RadioButton x:Name="rbStack" Content="Стек" GroupName="algo"
+                                     Style="{StaticResource RadioChip}" Margin="6,0,0,0"
+                                     ToolTip="Итеративное решение через явный стек задач"/>
+                    </StackPanel>
+
                     <Button x:Name="btnSolve" Content="Решить" Style="{StaticResource BtnAccent}"
                             MinWidth="86" Margin="10,0,8,0" Click="BtnSolve_Click"/>
                     <Button x:Name="btnStop" Content="Остановить" Style="{StaticResource BtnDanger}"
