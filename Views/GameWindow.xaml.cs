@@ -478,7 +478,7 @@ namespace HanoiTowers.Views
         private void Window_StateChanged(object sender, EventArgs e)
         {
             bool max = WindowState == WindowState.Maximized;
-            RootGrid.Margin = max ? new Thickness(8) : new Thickness(0);
+            RootGrid.Margin = max ? SystemParameters.WindowResizeBorderThickness : new Thickness(0);
             WindowBorder.CornerRadius = max ? new CornerRadius(0) : new CornerRadius(16);
             HeaderBorder.CornerRadius = max ? new CornerRadius(0) : new CornerRadius(16, 16, 0, 0);
             btnMaximize.Content = max ? "\uE923" : "\uE922";
