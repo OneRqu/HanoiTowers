@@ -63,12 +63,12 @@
                                                    FontSize="16" FontWeight="Bold"
                                                    Foreground="{StaticResource AccentBrush}"/>
                                     </Grid>
-                                    <Slider x:Name="sliderDisks" Minimum="1" Maximum="10" Value="3"
+                                    <Slider x:Name="sliderDisks" Minimum="1" Maximum="25" Value="3"
                                             Style="{StaticResource ModernSlider}" Margin="0,12,0,0"/>
                                     <Grid Margin="0,4,0,0">
                                         <TextBlock Text="1" FontSize="12"
                                                    Foreground="{StaticResource TextSecondaryBrush}"/>
-                                        <TextBlock Text="10" FontSize="12" HorizontalAlignment="Right"
+                                        <TextBlock Text="25" FontSize="12" HorizontalAlignment="Right"
                                                    Foreground="{StaticResource TextSecondaryBrush}"/>
                                     </Grid>
                                 </StackPanel>
